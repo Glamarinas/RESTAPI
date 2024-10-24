@@ -12,25 +12,43 @@ const getUserById = (req, res) => {
     const id = parseInt(req.params.id);
     pool.query(queries.getUserById, [id], (error, results) => {
         if (error) throw error;
+
+        if (results.rows.length === 0) {
+            // Αν δεν υπάρχει ο user, επιστρέφει μήνυμα ότι το user δεν υπάρχει
+            return res.status(400).send("User doesnt exists.");
+        }
+
         res.status(200).json(results.rows);
     });
 };
 
-const addUser = (req,res) => {
-    const {name, email, location} = req.body;
-    //check if email exists.
-    pool.query(queries.checkEmailExists, [email], (error,results) => {
-        if(results.rows.length){
+const addUser = (req, res) => {
+    const {name, lastname, email, password, location, phone, type} = req.body;
+
+    // Έλεγχος αν υπάρχει ήδη το email
+    pool.query(queries.checkEmailExists, [email], (error, results) => {
+        if (error) {
+            // Κάτι πήγε στραβά με το query
+            return res.status(500).send("Internal Server Error");
+        }
+
+        if (results.rows.length > 0) {
+            // Αν υπάρχει το email, επιστρέφει μήνυμα ότι το email υπάρχει ήδη
             return res.status(400).send("Email already exists.");
         }
 
-        //add user to db
-        pool.query(queries.addUser,[name,email,location], (error,result) => {
-            if(error) throw error;
-            res.status(201).send("User created Succesfully!");
+        // Αν το email δεν υπάρχει, προσθέτει τον χρήστη στη βάση δεδομένων
+        pool.query(queries.addUser, [name, lastname, email, password, location, phone, type], (error, result) => {
+            if (error) {
+                // Αν συμβεί κάποιο σφάλμα κατά την προσθήκη
+                return res.status(500).send("Error inserting user.");
+            }
+
+            // Αν πετύχει η προσθήκη, επιστρέφει μήνυμα επιτυχίας
+            res.status(201).send("User created successfully!");
         });
     });
-}
+};
 
 
 const deleteUser = (req, res) => {
@@ -61,7 +79,7 @@ const deleteUser = (req, res) => {
 
 const updateUser = (req,res) => {
     const id= parseInt(req.params.id);
-    const {name, email, location} = req.body;
+    const {name, lastname, email, password, location, phone, type} = req.body;
 
     // First, check if the user exists
     pool.query(queries.getUserById, [id], (error, results) => {
@@ -74,7 +92,7 @@ const updateUser = (req,res) => {
             return res.status(404).send("User does not exist in the database.");
         }
 
-        pool.query(queries.updateUser,[name,email,location,id], (error,result) => {
+        pool.query(queries.updateUser,[name, lastname, email, password, location, phone, type, id], (error,result) => {
             if (error) {
                 return res.status(500).send("An error occurred while updating the user.");
             }

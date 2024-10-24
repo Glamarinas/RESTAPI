@@ -1,5 +1,6 @@
 const express = require("express");
 const userRoutes = require("./src/users/routes");
+const announcementRoutes = require("./src/announcements/routes");
 
 
 
@@ -14,5 +15,6 @@ app.get("/", (req,res)=> {
 })
 
 app.use("/api/users", userRoutes);
+app.use("/api/announcements", announcementRoutes);
 
 app.listen(port,() => console.log(`app listening on port ${port}`));
