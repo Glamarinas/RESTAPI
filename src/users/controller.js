@@ -3,7 +3,10 @@ const queries = require("./queries");
 
 const getUsers = (req, res) => {
     pool.query(queries.getUsers, (error, results) => {
-        if (error) throw error;
+        if (error) {
+            // Κάτι πήγε στραβά με το query
+            return res.status(500).send("Internal Server Error");
+        }
         res.status(200).json(results.rows);
     });
 };
@@ -11,7 +14,10 @@ const getUsers = (req, res) => {
 const getUserById = (req, res) => {
     const id = parseInt(req.params.id);
     pool.query(queries.getUserById, [id], (error, results) => {
-        if (error) throw error;
+        if (error) {
+            // Κάτι πήγε στραβά με το query
+            return res.status(500).send("Internal Server Error");
+        }
 
         if (results.rows.length === 0) {
             // Αν δεν υπάρχει ο user, επιστρέφει μήνυμα ότι το user δεν υπάρχει
@@ -57,7 +63,8 @@ const deleteUser = (req, res) => {
     // First, check if the user exists
     pool.query(queries.getUserById, [id], (error, results) => {
         if (error) {
-            return res.status(500).send("An error occurred while checking for the user.");
+            // Κάτι πήγε στραβά με το query
+            return res.status(500).send("Internal Server Error");
         }
 
         // If no user found
@@ -84,7 +91,8 @@ const updateUser = (req,res) => {
     // First, check if the user exists
     pool.query(queries.getUserById, [id], (error, results) => {
         if (error) {
-            return res.status(500).send("An error occurred while checking for the user.");
+            // Κάτι πήγε στραβά με το query
+            return res.status(500).send("Internal Server Error");
         }
 
         // If no user found
@@ -94,7 +102,7 @@ const updateUser = (req,res) => {
 
         pool.query(queries.updateUser,[name, lastname, email, password, location, phone, type, id], (error,result) => {
             if (error) {
-                return res.status(500).send("An error occurred while updating the user.");
+                return res.status(500).send("Internal Server Error");
             }
 
             // User deletion was successful
@@ -104,7 +112,7 @@ const updateUser = (req,res) => {
 
     });
 
-}
+};
 
 module.exports = {
     getUsers,
