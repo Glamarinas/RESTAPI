@@ -89,7 +89,16 @@ const loginUser = (req, res) => {
             }
 
             // Επιστροφή επιτυχίας και μήνυμα login
-            res.status(200).json({message:"Login successful!"});
+            res.status(200).json({
+                //message:"Login successful!",
+                userId: user.id,
+                name:user.name,
+                lastname:user.lastname,
+                email:user.email,
+                location:user.location,
+                phone:user.phone,
+                type:user.type,
+            });
         });
     });
 };
@@ -124,7 +133,7 @@ const deleteUser = (req, res) => {
 
 const updateUser = (req,res) => {
     const id= parseInt(req.params.id);
-    const {name, lastname, email, password, location, phone, type} = req.body;
+    const {name, lastname, email, location, phone, type} = req.body;
 
     // First, check if the user exists
     pool.query(queries.getUserById, [id], (error, results) => {
@@ -138,7 +147,7 @@ const updateUser = (req,res) => {
             return res.status(404).json({message:"User does not exist in the database."});
         }
 
-        pool.query(queries.updateUser,[name, lastname, email, password, location, phone, type, id], (error,result) => {
+        pool.query(queries.updateUser,[name, lastname, email, location, phone, type, id], (error,result) => {
             if (error) {
                 return res.status(500).json({message:"Internal Server Error."});
             }
