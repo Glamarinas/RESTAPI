@@ -28,6 +28,21 @@ const getAnnouncementById = (req, res) => {
     });
 };
 
+const getAnnouncementsByUid = (req, res) => {
+    const userId = parseInt(req.params.id);
+    pool.query(queries.getAnnouncementsByUserId, [userId], (error, results) => {
+        if (error) {
+            return res.status(500).json({ message: "Internal Server Error." });
+        }
+        
+        if (results.rows.length === 0) {
+            return res.status(404).json({ message: "No announcements found for this user." });
+        }
+
+        res.status(200).json(results.rows);
+    });
+};
+
 const addAnnouncement = (req, res) => {
     const { type, product, ammount, price, sellerPhone,sellerEmail,description,user_id } = req.body;
 
@@ -100,4 +115,5 @@ module.exports = {
     addAnnouncement,
     updateAnnouncement,
     deleteAnnouncement,
+    getAnnouncementsByUid
 };
