@@ -12,6 +12,8 @@ const getUsers = (req, res) => {
     });
 };
 
+//επιστρεφει λιστα και οχι εναν μεμονομενο αντικειμενο user για αυτο ειναι ετσι κ το getUserById
+//στο apiConnections στο flutterAppCode
 const getUserById = (req, res) => {
     const id = parseInt(req.params.id);
     pool.query(queries.getUserById, [id], (error, results) => {
@@ -28,6 +30,17 @@ const getUserById = (req, res) => {
         res.status(200).json(results.rows);
     });
 };
+
+/*για να επιστρεψει ενα αντικειμενο user θα ηθελε κατι τετοιο
+app.get('/api/users/:id', async (req, res) => {
+    const userId = req.params.id;
+    const user = await getUserById(userId); // Ανάκτηση χρήστη από τη βάση δεδομένων
+    if (user) {
+      res.json(user); // Επιστροφή μόνο του αντικειμένου χρήστη
+    } else {
+      res.status(404).json({ message: 'User not found' });
+    }
+});*/
 
 const addUser = (req, res) => {
     const { name, lastname, email, password, location, phone, type } = req.body;

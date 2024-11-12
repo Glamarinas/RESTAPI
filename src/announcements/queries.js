@@ -1,4 +1,8 @@
 const getAnnouncements = "SELECT * FROM announcements";
+const getAnnouncementsByProduct = "SELECT * FROM announcements WHERE product = $1";
+const getAnnouncementsByType = "SELECT * FROM announcements WHERE type = $1";
+const getAnnouncementsByTypeAndProduct = "SELECT * FROM announcements WHERE type = $1 AND product = $2";
+
 const getAnnouncementById = "SELECT * FROM announcements WHERE id = $1";
 const addAnnouncement = "INSERT INTO announcements (type, product, ammount, price, sellerPhone,sellerEmail,description,user_id) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)";
 const deleteAnnouncement = "DELETE FROM announcements WHERE id = $1";
@@ -12,4 +16,10 @@ module.exports = {
     deleteAnnouncement,
     updateAnnouncement,
     getAnnouncementsByUserId,
+    getAnnouncementsByProduct,
+    getAnnouncementsByType,
+    getAnnouncementsByTypeAndProduct,
 };
+
+
+

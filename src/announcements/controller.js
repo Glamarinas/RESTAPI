@@ -2,14 +2,40 @@ const pool = require("../../db");
 const queries = require("./queries");
 
 const getAnnouncements = (req, res) => {
-    pool.query(queries.getAnnouncements, (error, results) => {
+    const { product, type, sortBy } = req.query;
+    let query;
+    let values = [];
+
+    // Επιλογή query βάσει των φίλτρων
+    if (product && type) {
+        query = queries.getAnnouncementsByTypeAndProduct;
+        values = [type, product];
+    } else if (product) {
+        query = queries.getAnnouncementsByProduct;
+        values = [product];
+    } else if (type) {
+        query = queries.getAnnouncementsByType;
+        values = [type];
+    } else {
+        query = queries.getAnnouncements;
+    }
+
+    // Προσθήκη της ταξινόμησης
+    if (sortBy === 'descPrice') {
+        query += " ORDER BY price DESC";
+    } else if (sortBy === 'ascPrice') {
+        query += " ORDER BY price ASC";
+    }
+
+    // Εκτέλεση του query με βάση τις παραμέτρους
+    pool.query(query, values, (error, results) => {
         if (error) {
-            // Κάτι πήγε στραβά με το query
-            return res.status(500).json({message:"Internal Server Error."});
+            return res.status(500).json({ message: "Internal Server Error." });
         }
         res.status(200).json(results.rows);
     });
 };
+
 
 const getAnnouncementById = (req, res) => {
     const id = parseInt(req.params.id);
